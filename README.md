@@ -14,7 +14,7 @@ O desenvolvimento desse projeto foi feito pelo grupo 6 da disciplina de *Bases d
 
 ## Instalação
 
-Instale Python caso não tenha feito e em seguida, utilize o gerenciador de pacote [pip](https://pypi.org/project/pip/) para instalar o [cx-Oracle](https://pypi.org/project/cx-Oracle/).
+Instale Python caso não tenha feito e, em seguida, utilize o gerenciador de pacote [pip](https://pypi.org/project/pip/) para instalar o [cx-Oracle](https://pypi.org/project/cx-Oracle/).
 ```bash
 pip install cx-Oracle
 ```
