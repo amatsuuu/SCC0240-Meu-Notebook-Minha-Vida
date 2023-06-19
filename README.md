@@ -7,14 +7,18 @@ Projeto de um sistema de banco de dados para auxiliar no empréstimo de disposit
 O desenvolvimento desse projeto foi feito pelo grupo 6 da disciplina de *Bases de Dados* (SSC0240) realizada no 1° Semestre de 2023.
 
 ### Desenvolvedores:
-- André Kenji Hidaka Matsumoto
-- Rebeca Vieira Carvalho
-- Reynaldo Coronatto Neto
-- Theo da Mota dos Santos
+- [André Kenji Hidaka Matsumoto](https://github.com/amatsuuu)
+- [Rebeca Vieira Carvalho](https://github.com/rebeca-vc)
+- [Reynaldo Coronatto Neto](https://github.com/reynaldocoronatto)
+- [Theo da Mota dos Santos](https://github.com/theosant)
 
 ## Instalação
 
-What are the steps required to install your project? Provide a step-by-step description of how to get the development environment running.
+Instale Python caso não tenha feito e em seguida, utilize o gerenciador de pacote [pip](https://pypi.org/project/pip/) para instalar o [cx-Oracle](https://pypi.org/project/cx-Oracle/).
+```bash
+pip install cx-Oracle
+```
+
 
 ## Utilização
 
