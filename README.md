@@ -14,18 +14,24 @@ O desenvolvimento desse projeto foi feito pelo grupo 6 da disciplina de *Bases d
 
 ## Instalação
 
-Instale Python caso não tenha feito e, em seguida, utilize o gerenciador de pacote [pip](https://pypi.org/project/pip/) para instalar o [cx-Oracle](https://pypi.org/project/cx-Oracle/).
-```bash
+Instale Python caso não tenha feito e, em seguida, utilize o gerenciador de pacote [pip](https://pypi.org/project/pip/) para instalar o [cx-Oracle](https://pypi.org/project/cx-Oracle/) e o [dotenv](https://pypi.org/project/python-dotenv/)
+```
 pip install cx-Oracle
+
+pip install python-dotenv
 ```
 
 
 ## Utilização
 
-Provide instructions and examples for use. Include screenshots as needed.
+Para executar o código, certifique-se que você está no diretório `App/` e execute o seguinte código no terminal:
 
-To add a screenshot, create an `assets/images` folder in your repository and upload your screenshot to it. Then, using the relative filepath, add it to your README using the following syntax:
+```
+python main.py
+```
 
-    ```md
-    ![alt text](assets/images/screenshot.png)
-    ```
+Caso isso não funcione, tente:
+
+```
+python3 main.py
+```
