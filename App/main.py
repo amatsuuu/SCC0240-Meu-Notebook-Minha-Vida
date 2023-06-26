@@ -5,8 +5,8 @@
 from os import system, name
 import os    
 
-# instalar biblioteca cx_Oracle
-import cx_Oracle
+# instalar biblioteca oracledb]
+import oracledb
 
 # instalar biblioteca dotenv
 import dotenv
@@ -15,6 +15,10 @@ dotenv.load_dotenv(dotenv.find_dotenv())
 
 USERNAME = os.getenv("USER_NAME")
 USER_PASSWORD = os.getenv("USER_PASSWORD")
+
+print("Tentando conexão...")
+connection = oracledb.connect(user=USERNAME, password=USER_PASSWORD, host="orclgrad1.icmc.usp.br", port=1521, service_name="pdb_elaine.icmc.usp.br")
+print("Conexão estabelecida!")
 
 def main_menu():
     clear()
@@ -25,15 +29,27 @@ def main_menu():
     print("2. Buscar empréstios por intervalo de data")
     print("3. Sair")
     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+
     option = input("Digite o número da opção desejada: ")
+
+    
+
 
     if option == "1":
         cadastro_dispositivo()
     elif option == "2":
         perform_action()
     elif option == "3":
+        connection.close()
         clear()
         exit()
+    elif option == "4":
+        # Teste
+        print(connection)
+        
+        cursor = connection.cursor()
+        for row in cursor.execute("select * from sala"):
+            print(row)
     else:
         print("Opção inválida. Por favor, escolha uma opção válida.")
         main_menu()

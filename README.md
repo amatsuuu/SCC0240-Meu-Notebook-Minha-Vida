@@ -14,9 +14,9 @@ O desenvolvimento desse projeto foi feito pelo grupo 6 da disciplina de *Bases d
 
 ## Instalação
 
-Instale Python caso não tenha feito e, em seguida, utilize o gerenciador de pacote [pip](https://pypi.org/project/pip/) para instalar o [cx-Oracle](https://pypi.org/project/cx-Oracle/) e o [dotenv](https://pypi.org/project/python-dotenv/)
+Instale Python caso não tenha feito e, em seguida, utilize o gerenciador de pacote [pip](https://pypi.org/project/pip/) para instalar o [oracledb](https://pypi.org/project/oracledb/) e o [dotenv](https://pypi.org/project/python-dotenv/)
 ```
-pip install cx-Oracle
+pip install oracledb
 
 pip install python-dotenv
 ```
