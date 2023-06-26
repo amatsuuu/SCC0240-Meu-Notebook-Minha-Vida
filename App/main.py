@@ -11,15 +11,17 @@ import oracledb
 # instalar biblioteca dotenv
 import dotenv
 
+# Busca das informações
 dotenv.load_dotenv(dotenv.find_dotenv())
-
 USERNAME = os.getenv("USER_NAME")
 USER_PASSWORD = os.getenv("USER_PASSWORD")
 
+# Tentativa de conexão
 print("Tentando conexão...")
 connection = oracledb.connect(user=USERNAME, password=USER_PASSWORD, host="orclgrad1.icmc.usp.br", port=1521, service_name="pdb_elaine.icmc.usp.br")
 print("Conexão estabelecida!")
 
+# Tirar as chamadas recursivas
 def main_menu():
     clear()
     print(">>>>>>>> Meu Notebook, Minha Vida <<<<<<<<")
@@ -32,9 +34,6 @@ def main_menu():
 
     option = input("Digite o número da opção desejada: ")
 
-    
-
-
     if option == "1":
         cadastro_dispositivo()
     elif option == "2":
@@ -43,13 +42,6 @@ def main_menu():
         connection.close()
         clear()
         exit()
-    elif option == "4":
-        # Teste
-        print(connection)
-        
-        cursor = connection.cursor()
-        for row in cursor.execute("select * from sala"):
-            print(row)
     else:
         print("Opção inválida. Por favor, escolha uma opção válida.")
         main_menu()
@@ -57,19 +49,41 @@ def main_menu():
 
 def cadastro_dispositivo():
     clear()
-    print("Essa é a seção de informações.")
+    
+    cursor = connection.cursor()
 
-    try:
-        numero_serial = input("Número serial: ")
-        tipo = input("Tipo: ")
-        modelo = input("Modelo: ")
-        empresa = input("Empresa: ")
+    while(True):
+        try:
+            print("Essa é a seção de informações.")
+            numero_serial = input("Número serial: ")
+            tipo = input("Tipo: ")
+            modelo = input("Modelo: ")
+            empresa = input("Empresa: ")
 
-    except Exception as e:
-        print(e)
+            cursor.execute("insert into dispositivo values (:numero_serial, :tipo, :modelo, 'DISPONIVEL', 1, :empresa)", 
+                           [numero_serial, tipo, modelo, empresa])
 
-    finally:
-        main_menu()
+        except oracledb.IntegrityError as e:
+            error_obj, = e.args
+            print("ID já cadastrado.")
+            print("Error Code:", error_obj.code)
+            print("Error Full Code:", error_obj.full_code)
+            print("Error Message:", error_obj.message)
+            connection.rollback()
+            #clear()
+            print("")
+
+        except oracledb.Error as e:
+            error_obj, = e.args
+            print("Customer ID already exists")
+            print("Error Code:", error_obj.code)
+            print("Error Full Code:", error_obj.full_code)
+            print("Error Message:", error_obj.message)
+            connection.rollback()
+
+        else:
+            connection.commit()
+            return
 
     # Coloque aqui o código para mostrar as informações desejadas.
     # Você pode adicionar mais opções de menu dentro dessa função, se necessário.
