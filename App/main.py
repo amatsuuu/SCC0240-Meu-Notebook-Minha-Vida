@@ -11,16 +11,19 @@ import oracledb
 # instalar biblioteca dotenv
 import dotenv
 
-# Busca das informações
-dotenv.load_dotenv(dotenv.find_dotenv())
-USERNAME = os.getenv("USER_NAME")
-USER_PASSWORD = os.getenv("USER_PASSWORD")
+def connect():
+    # Busca das informações
+    dotenv.load_dotenv(dotenv.find_dotenv())
+    USERNAME = os.getenv("USER_NAME")
+    USER_PASSWORD = os.getenv("USER_PASSWORD")
 
-# Tentativa de conexão
-print("Tentando conexão...")
-connection = oracledb.connect(user=USERNAME, password=USER_PASSWORD, host="orclgrad1.icmc.usp.br", port=1521, service_name="pdb_elaine.icmc.usp.br")
-print("Conexão estabelecida!")
-print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+    # Tentativa de conexão
+    print("Tentando conexão...")
+    connection = oracledb.connect(user=USERNAME, password=USER_PASSWORD, host="orclgrad1.icmc.usp.br", port=1521, service_name="pdb_elaine.icmc.usp.br")
+    print("Conexão estabelecida!")
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+
+    return connection
 
 def main_menu():
     print(">>>>>>>> Meu Notebook, Minha Vida <<<<<<<<")
@@ -163,8 +166,14 @@ def clear():
 
 
 if __name__ == "__main__":
-    # connection = cx_Oracle.connect(user=USERNAME, password=USER_PASSWORD, dsn="pdb_elaine.icmc.usp.br/Pratica")
-    # cursor = connection.cursor()
     clear()
-    while(True):
-        main_menu()
+    try:
+        if(not connect()):
+            exit()
+
+        while(True):
+            main_menu()
+
+    except KeyboardInterrupt:
+        print("\nEncerrando a aplicação")
+        exit()
