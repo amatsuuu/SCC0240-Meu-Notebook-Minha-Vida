@@ -22,37 +22,31 @@ connection = oracledb.connect(user=USERNAME, password=USER_PASSWORD, host="orclg
 print("Conexão estabelecida!")
 print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
 
-# Tirar as chamadas recursivas
 def main_menu():
     print(">>>>>>>> Meu Notebook, Minha Vida <<<<<<<<")
     print("Bem-vindo(a) à Página Inicial do nosso Sistema!")
     print("Escolha uma opção:")
     print("1. Cadastrar dispositivo")
-    print("2. Buscar empréstios por intervalo de data")
+    print("2. Buscar empréstimos por intervalo de data")
     print("3. Sair")
     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
 
     option = input("Digite o número da opção desejada: ")
+    clear()
 
     if option == "1":
-        clear()
         cadastro_dispositivo()
     elif option == "2":
-        clear()
         perform_action()
     elif option == "3":
         connection.close()
-        clear()
         exit()
     else:
-        clear()
         print("Opção inválida. Por favor, escolha uma opção válida.")
         print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
 
 
 def cadastro_dispositivo():
-    clear()
-    
     cursor = connection.cursor()
 
     while(True):
@@ -76,21 +70,26 @@ def cadastro_dispositivo():
                 print("O número serial não pode ser nulo.")
             elif error_obj.code == 2291:
                 print("Empresa não encontrada.")
+            else:
+                print("Error Message:", error_obj.message)
             
+            # [Apagar] Debugging de erros
+            '''
             #print("Error Code:", error_obj.code)
             #print("Error Context:", error_obj.context)
             #print("Error Full Code:", error_obj.full_code)
             #print("Error Message:", error_obj.message)
+            '''
+
             print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
             connection.rollback()
 
             acao = input("Você ainda deseja inserir um dispositivo? Se sim, digite 'S': ")
-            print("acao:", acao)
             clear()
+
+            # Saida do loop
             if acao.upper() != 'S':
                 return
-
-
 
         else:
             print ("Dispositivo adicionado com sucesso!")
