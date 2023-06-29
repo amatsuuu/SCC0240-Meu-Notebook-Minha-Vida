@@ -89,12 +89,14 @@ def cadastro_dispositivo():
 
             # Saida do loop
             if acao.upper() != 'S':
+                cursor.close()
                 return
 
         else:
             print ("Dispositivo adicionado com sucesso!")
             print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
             connection.commit()
+            cursor.close()
             return
 
     # Coloque aqui o código para mostrar as informações desejadas.
@@ -103,8 +105,49 @@ def cadastro_dispositivo():
 
 
 def perform_action():
-    clear()
-    print("Essa é a seção de ação.")
+    cursor = connection.cursor()
+
+    while(True):
+        try:
+            print("Essa é a seção de ação.")
+            print("Utilize o formato (YYYY-MM-DD)")
+            data_inicio = input("Data de início: ")
+            data_fim = input("Data de fim: ")
+            clear()
+
+            cursor.execute("SELECT E.DATA, E.DATA_DEVOLUCAO, D.NUMERO_SERIAL, D.TIPO, D.MODELO, D.STATUS FROM DISPOSITIVO D JOIN EMPRESTIMO E ON D.NUMERO_SERIAL = E.DISPOSITIVO WHERE E.DATA BETWEEN data_inicio, 'YYYY-MM-DD') AND TO_DATE(:data_fim, 'YYYY-MM-DD') ORDER BY E.DATA DESC",
+                           [data_inicio, data_fim])
+        
+        except oracledb.Error as e:
+            error_obj, = e.args
+
+            print("Error Message:", error_obj.message)
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+            connection.rollback()
+
+            acao = input("Você ainda deseja buscar empréstimos? Se sim, digite 'S': ")
+            clear()
+
+            # Saida do loop
+            if acao.upper() != 'S':
+                cursor.close()
+                return
+
+        else:
+            tabela = cursor.fetchall()
+            print(tabela)
+            if tabela == []:
+                print("Não foi encontrado nenhum empréstimo nesse intervalo de tempo.")
+            else:
+                for tuplas in tabela:
+                    print(tuplas)
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+            connection.commit()
+            cursor.close()
+            return
+
+
+
     # cursor.execute("""SELECT * FROM JOGADOR""")
     # for fname, lname in cursor:
     #     print("Values:", fname, lname)
