@@ -20,7 +20,12 @@ ORDER BY RAZAO_MANUT_EMPRESTIMO DESC;
 
 
 -- Qual a porcentagem de acertos dos exercícios por oferecimento do curso de ‘Python’ e ‘Javascript’.
-SELECT C.linguagem, C.ano, C.semestre
+SELECT C.linguagem, C.ano, C.semestre, COUNT(*)/COUNT(*) AS PORCENTAGEM
+    from CURSO C
+    join TURMA T ON C.LINGUAGEM = T.LINGUAGEM AND C.ANO = T.ANO AND C.SEMESTRE = T.SEMESTRE
+    JOIN AULA A ON A.TURMA = T.TURMA
+    JOIN EXERCICIO E ON A.TURMA = E.TURMA AND A.DATA = E.DATA
+    JOIN RESPOSTA R ON R.TURMA = E.TURMA AND R.DATA = E.DATA AND R.EXERCICIO = E.NUMERO
 			WHERE C.linguagem = ‘Python’ OR C.linguagem = ‘Javascript’
  GROUP BY C.linguagem, C.ano, C.semestre
 --...
