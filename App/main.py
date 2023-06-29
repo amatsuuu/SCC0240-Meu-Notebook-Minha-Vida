@@ -11,16 +11,19 @@ import oracledb
 # instalar biblioteca dotenv
 import dotenv
 
-# Busca das informações
-dotenv.load_dotenv(dotenv.find_dotenv())
-USERNAME = os.getenv("USER_NAME")
-USER_PASSWORD = os.getenv("USER_PASSWORD")
+def connect():
+    # Busca das informações
+    dotenv.load_dotenv(dotenv.find_dotenv())
+    USERNAME = os.getenv("USER_NAME")
+    USER_PASSWORD = os.getenv("USER_PASSWORD")
 
-# Tentativa de conexão
-print("Tentando conexão...")
-connection = oracledb.connect(user=USERNAME, password=USER_PASSWORD, host="orclgrad1.icmc.usp.br", port=1521, service_name="pdb_elaine.icmc.usp.br")
-print("Conexão estabelecida!")
-print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+    # Tentativa de conexão
+    print("Tentando conexão...")
+    connection = oracledb.connect(user=USERNAME, password=USER_PASSWORD, host="orclgrad1.icmc.usp.br", port=1521, service_name="pdb_elaine.icmc.usp.br")
+    print("Conexão estabelecida!")
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+
+    return connection
 
 def main_menu():
     print(">>>>>>>> Meu Notebook, Minha Vida <<<<<<<<")
@@ -73,14 +76,6 @@ def cadastro_dispositivo():
             else:
                 print("Error Message:", error_obj.message)
             
-            # [Apagar] Debugging de erros
-            '''
-            #print("Error Code:", error_obj.code)
-            #print("Error Context:", error_obj.context)
-            #print("Error Full Code:", error_obj.full_code)
-            #print("Error Message:", error_obj.message)
-            '''
-
             print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
             connection.rollback()
 
@@ -103,7 +98,6 @@ def cadastro_dispositivo():
     # Você pode adicionar mais opções de menu dentro dessa função, se necessário.
     # Lembre-se de fornecer uma opção para retornar ao menu principal.
 
-
 def perform_action():
     cursor = connection.cursor()
 
@@ -115,7 +109,7 @@ def perform_action():
             data_fim = input("Data de fim: ")
             clear()
 
-            cursor.execute("SELECT E.DATA, E.DATA_DEVOLUCAO, D.NUMERO_SERIAL, D.TIPO, D.MODELO, D.STATUS FROM DISPOSITIVO D JOIN EMPRESTIMO E ON D.NUMERO_SERIAL = E.DISPOSITIVO WHERE E.DATA BETWEEN data_inicio, 'YYYY-MM-DD') AND TO_DATE(:data_fim, 'YYYY-MM-DD') ORDER BY E.DATA DESC",
+            cursor.execute("SELECT E.DATA, E.DATA_DEVOLUCAO, D.NUMERO_SERIAL, D.TIPO, D.MODELO, D.STATUS FROM DISPOSITIVO D JOIN EMPRESTIMO E ON D.NUMERO_SERIAL = E.DISPOSITIVO WHERE E.DATA BETWEEN TO_DATE(:data_inicio, 'YYYY-MM-DD') AND TO_DATE(:data_fim, 'YYYY-MM-DD') ORDER BY E.DATA DESC",
                            [data_inicio, data_fim])
         
         except oracledb.Error as e:
@@ -163,8 +157,14 @@ def clear():
 
 
 if __name__ == "__main__":
-    # connection = cx_Oracle.connect(user=USERNAME, password=USER_PASSWORD, dsn="pdb_elaine.icmc.usp.br/Pratica")
-    # cursor = connection.cursor()
     clear()
-    while(True):
-        main_menu()
+    try:
+        if(not connect()):
+            exit()
+
+        while(True):
+            main_menu()
+
+    except KeyboardInterrupt:
+        print("\nEncerrando a aplicação")
+        exit()
