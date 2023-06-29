@@ -186,8 +186,8 @@ CREATE TABLE AULA (
 );
 
 -- Trigger para inser��o autom�tica do ID
--- CREATE SEQUENCE id_turma
---     START WITH 1;
+CREATE SEQUENCE id_turma
+    START WITH 1;
 
 CREATE OR REPLACE TRIGGER incremento
     BEFORE INSERT ON TURMA
