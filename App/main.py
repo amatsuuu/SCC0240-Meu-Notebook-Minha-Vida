@@ -73,14 +73,6 @@ def cadastro_dispositivo():
             else:
                 print("Error Message:", error_obj.message)
             
-            # [Apagar] Debugging de erros
-            '''
-            #print("Error Code:", error_obj.code)
-            #print("Error Context:", error_obj.context)
-            #print("Error Full Code:", error_obj.full_code)
-            #print("Error Message:", error_obj.message)
-            '''
-
             print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
             connection.rollback()
 
@@ -103,7 +95,6 @@ def cadastro_dispositivo():
     # Você pode adicionar mais opções de menu dentro dessa função, se necessário.
     # Lembre-se de fornecer uma opção para retornar ao menu principal.
 
-
 def perform_action():
     cursor = connection.cursor()
 
@@ -115,7 +106,7 @@ def perform_action():
             data_fim = input("Data de fim: ")
             clear()
 
-            cursor.execute("SELECT E.DATA, E.DATA_DEVOLUCAO, D.NUMERO_SERIAL, D.TIPO, D.MODELO, D.STATUS FROM DISPOSITIVO D JOIN EMPRESTIMO E ON D.NUMERO_SERIAL = E.DISPOSITIVO WHERE E.DATA BETWEEN data_inicio, 'YYYY-MM-DD') AND TO_DATE(:data_fim, 'YYYY-MM-DD') ORDER BY E.DATA DESC",
+            cursor.execute("SELECT E.DATA, E.DATA_DEVOLUCAO, D.NUMERO_SERIAL, D.TIPO, D.MODELO, D.STATUS FROM DISPOSITIVO D JOIN EMPRESTIMO E ON D.NUMERO_SERIAL = E.DISPOSITIVO WHERE E.DATA BETWEEN TO_DATE(:data_inicio, 'YYYY-MM-DD') AND TO_DATE(:data_fim, 'YYYY-MM-DD') ORDER BY E.DATA DESC",
                            [data_inicio, data_fim])
         
         except oracledb.Error as e:
