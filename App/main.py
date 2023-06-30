@@ -1,18 +1,22 @@
-# Inserção de Dispositivo.
-# busca de empréstimos dado uma data.
+#-------------------------------------------------------------------------------
+# Meu Notebook, Minha Vida.
+# Disciplina de Bases de Dados (SSC0240).
+#-------------------------------------------------------------------------------
 
+#-------------------------------------------------------------------------------
+# Inserção de Dispositivos e busca de empréstimos dado um intervalo.
+#-------------------------------------------------------------------------------
 
 from os import system, name
 import os    
 
-# instalar biblioteca oracledb]
+# Instalar biblioteca oracledb e pythn-dotenv
 import oracledb
-
-# instalar biblioteca dotenv
 import dotenv
 
+# Realiza a conexão ao banco de dados (Oracle)
 def connect():
-    # Busca das informações
+    # Busca das informações no .env
     dotenv.load_dotenv(dotenv.find_dotenv())
     USERNAME = os.getenv("USER_NAME")
     USER_PASSWORD = os.getenv("USER_PASSWORD")
@@ -34,13 +38,16 @@ def main_menu():
     print("3. Sair")
     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
 
+def application(connection): 
+    main_menu()
+
     option = input("Digite o número da opção desejada: ")
     clear()
 
     if option == "1":
-        cadastro_dispositivo()
+        cadastro_dispositivo(connection)
     elif option == "2":
-        perform_action()
+        select_emprestimo(connection)
     elif option == "3":
         connection.close()
         exit()
@@ -49,9 +56,8 @@ def main_menu():
         print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
 
 
-def cadastro_dispositivo():
-    cursor = connection.cursor()
 
+def cadastro_dispositivo(connection):
     while(True):
         try:
             print("Essa é a seção de informações.")
@@ -61,8 +67,11 @@ def cadastro_dispositivo():
             empresa = input("Empresa: ")
             clear()
 
-            cursor.execute("insert into dispositivo values (:numero_serial, :tipo, :modelo, 'DISPONIVEL', 1, :empresa)", 
-                           [numero_serial, tipo, modelo, empresa])
+            # Inserção SQL
+            cursor = connection.cursor()
+            cursor.execute("""insert into dispositivo
+                            values (:numero_serial, :tipo, :modelo, 'DISPONIVEL', 1, :empresa)""",
+                            [numero_serial.upper(), tipo.upper(), modelo.upper(), empresa.upper()])
 
         except oracledb.Error as e:
             error_obj, = e.args
@@ -82,7 +91,6 @@ def cadastro_dispositivo():
             acao = input("Você ainda deseja inserir um dispositivo? Se sim, digite 'S': ")
             clear()
 
-            # Saida do loop
             if acao.upper() != 'S':
                 cursor.close()
                 return
@@ -90,27 +98,30 @@ def cadastro_dispositivo():
         else:
             print ("Dispositivo adicionado com sucesso!")
             print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
-            connection.commit()
+
             cursor.close()
+            connection.commit()
             return
 
-    # Coloque aqui o código para mostrar as informações desejadas.
-    # Você pode adicionar mais opções de menu dentro dessa função, se necessário.
-    # Lembre-se de fornecer uma opção para retornar ao menu principal.
 
-def perform_action():
-    cursor = connection.cursor()
 
+def select_emprestimo(connection):
     while(True):
         try:
             print("Essa é a seção de ação.")
-            print("Utilize o formato (YYYY-MM-DD)")
+            print("Utilize o formato (DD-MM-YYYY)")
             data_inicio = input("Data de início: ")
             data_fim = input("Data de fim: ")
             clear()
 
-            cursor.execute("SELECT E.DATA, E.DATA_DEVOLUCAO, D.NUMERO_SERIAL, D.TIPO, D.MODELO, D.STATUS FROM DISPOSITIVO D JOIN EMPRESTIMO E ON D.NUMERO_SERIAL = E.DISPOSITIVO WHERE E.DATA BETWEEN TO_DATE(:data_inicio, 'YYYY-MM-DD') AND TO_DATE(:data_fim, 'YYYY-MM-DD') ORDER BY E.DATA DESC",
-                           [data_inicio, data_fim])
+            cursor = connection.cursor()
+            cursor.execute("""select E.DATA, E.DATA_DEVOLUCAO, D.NUMERO_SERIAL, D.TIPO, D.MODELO, D.STATUS
+                            from DISPOSITIVO D 
+                            join EMPRESTIMO E
+                            on D.NUMERO_SERIAL = E.DISPOSITIVO
+                            where E.DATA between TO_DATE(:data_inicio, 'DD-MM-YYYY') and TO_DATE(:data_fim, 'DD-MM-YYYY')
+                            order by E.DATA desc""",
+                            [data_inicio, data_fim])
         
         except oracledb.Error as e:
             error_obj, = e.args
@@ -129,25 +140,22 @@ def perform_action():
 
         else:
             tabela = cursor.fetchall()
-            print(tabela)
             if tabela == []:
                 print("Não foi encontrado nenhum empréstimo nesse intervalo de tempo.")
             else:
-                for tuplas in tabela:
-                    print(tuplas)
+                for tupla in tabela:
+                    print("--------------------------", end="\n")
+                    print("Data de retirada:", tupla[0].strftime("%d-%m-%Y"))
+                    print("Data de devolução:", tupla[1].strftime("%d-%m-%Y"))
+                    print("Número serial:", tupla[2])
+                    print("Tipo", tupla[3])
+                    print("Modelo", tupla[4])
+                    print("Status", tupla[5])
+                    
             print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
-            connection.commit()
             cursor.close()
+            connection.commit()
             return
-
-
-
-    # cursor.execute("""SELECT * FROM JOGADOR""")
-    # for fname, lname in cursor:
-    #     print("Values:", fname, lname)
-    # Coloque aqui o código para realizar a ação desejada.
-    # Você pode adicionar mais opções de menu dentro dessa função, se necessário.
-    # Lembre-se de fornecer uma opção para retornar ao menu principal.
 
 def clear(): 
     if name == 'nt': 
@@ -159,11 +167,14 @@ def clear():
 if __name__ == "__main__":
     clear()
     try:
-        if(not connect()):
+        connection = connect()
+        if(not connection):
             exit()
 
         while(True):
-            main_menu()
+            application(connection)
+        
+        connection.close()
 
     except KeyboardInterrupt:
         print("\nEncerrando a aplicação")
