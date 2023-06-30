@@ -25,18 +25,22 @@ def connect():
     print("Tentando conexão...")
     connection = oracledb.connect(user=USERNAME, password=USER_PASSWORD, host="orclgrad1.icmc.usp.br", port=1521, service_name="pdb_elaine.icmc.usp.br")
     print("Conexão estabelecida!")
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
 
     return connection
 
+
+
 def main_menu():
-    print(">>>>>>>> Meu Notebook, Minha Vida <<<<<<<<")
-    print("Bem-vindo(a) à Página Inicial do nosso Sistema!")
+    print(">>>>>>>>>>> Meu Notebook, Minha Vida <<<<<<<<<<<")
+    print("Bem-vindo(a) à Página Inicial do nosso Sistema!", end='\n')
     print("Escolha uma opção:")
     print("1. Cadastrar dispositivo")
     print("2. Buscar empréstimos por intervalo de data")
     print("3. Sair")
-    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+    print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+
+
 
 def application(connection): 
     main_menu()
@@ -53,7 +57,7 @@ def application(connection):
         exit()
     else:
         print("Opção inválida. Por favor, escolha uma opção válida.")
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
 
 
 
@@ -85,7 +89,7 @@ def cadastro_dispositivo(connection):
             else:
                 print("Error Message:", error_obj.message)
             
-            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
             connection.rollback()
 
             acao = input("Você ainda deseja inserir um dispositivo? Se sim, digite 'S': ")
@@ -96,8 +100,8 @@ def cadastro_dispositivo(connection):
                 return
 
         else:
-            print ("Dispositivo adicionado com sucesso!")
-            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+            print("Dispositivo adicionado com sucesso!")
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
 
             cursor.close()
             connection.commit()
@@ -127,13 +131,12 @@ def select_emprestimo(connection):
             error_obj, = e.args
 
             print("Error Message:", error_obj.message)
-            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
             connection.rollback()
 
             acao = input("Você ainda deseja buscar empréstimos? Se sim, digite 'S': ")
             clear()
 
-            # Saida do loop
             if acao.upper() != 'S':
                 cursor.close()
                 return
@@ -144,24 +147,28 @@ def select_emprestimo(connection):
                 print("Não foi encontrado nenhum empréstimo nesse intervalo de tempo.")
             else:
                 for tupla in tabela:
-                    print("--------------------------", end="\n")
+                    print("------------------------------------------------", end="\n")
                     print("Data de retirada:", tupla[0].strftime("%d-%m-%Y"))
                     print("Data de devolução:", tupla[1].strftime("%d-%m-%Y"))
                     print("Número serial:", tupla[2])
-                    print("Tipo", tupla[3])
-                    print("Modelo", tupla[4])
-                    print("Status", tupla[5])
+                    print("Tipo:", tupla[3])
+                    print("Modelo:", tupla[4])
+                    print("Status:", tupla[5])
                     
-            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+
             cursor.close()
             connection.commit()
             return
+
+
 
 def clear(): 
     if name == 'nt': 
         x = system('cls') 
     else: 
         x = system('clear') 
+
 
 
 if __name__ == "__main__":
