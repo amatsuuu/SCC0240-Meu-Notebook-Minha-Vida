@@ -31,7 +31,7 @@ def connect():
     return connection
 
 
-
+# Interface inicial da aplicação
 def main_menu():
     print(">>>>>>>>>>> Meu Notebook, Minha Vida <<<<<<<<<<<")
     print("Bem-vindo(a) à Página Inicial do nosso Sistema!", end="\n\n")
@@ -42,7 +42,7 @@ def main_menu():
     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
 
 
-
+# Aplicação que possui as opções das funcionalidades
 def application(connection): 
     main_menu()
 
@@ -61,10 +61,12 @@ def application(connection):
         print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
 
 
-
+# Função que realiza o cadastro de dispositivos
+# Ela realiza a entrada dos valores para o insert
 def cadastro_dispositivo(connection):
     while(True):
         try:
+            # Entrada de valores
             print("Essa é a seção de informações.")
             numero_serial = input("Número serial: ")
             tipo = input("Tipo: ")
@@ -78,6 +80,7 @@ def cadastro_dispositivo(connection):
             cursor = connection.cursor()
             cursor.execute(sql, [numero_serial.upper(), tipo.upper(), modelo.upper(), empresa.upper()])
 
+        # Tratamento de exceções do banco
         except oracledb.Error as e:
             error_obj, = e.args
 
@@ -91,8 +94,22 @@ def cadastro_dispositivo(connection):
                 print("Error Message:", error_obj.message)
             
             print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+
+            # Caso de erro ele dá rollback e não executa a ação definitivamente
             connection.rollback()
 
+        else:
+            # Caso de sucesso de inserção
+            print("Dispositivo adicionado com sucesso!")
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+
+            cursor.close()
+
+            # Caso dê certo ao final da ação ele commita as mudanças
+            connection.commit()
+
+        finally:
+            # Final de cada ação que permite a repetição da funcionalidade ou saída dela
             acao = input("Você ainda deseja inserir um dispositivo? Se sim, digite 'S': ")
             clear()
 
@@ -100,16 +117,10 @@ def cadastro_dispositivo(connection):
                 cursor.close()
                 return
 
-        else:
-            print("Dispositivo adicionado com sucesso!")
-            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
-
-            cursor.close()
-            connection.commit()
-            return
 
 
-
+# Função que realiza a busca de empréstimos de dispositivos baseados no intervalo de datas
+# Ela realiza a entrada dos valores para o select
 def select_emprestimo(connection):
     while(True):
         try:
@@ -129,6 +140,7 @@ def select_emprestimo(connection):
             cursor = connection.cursor()
             cursor.execute(sql,[data_inicio, data_fim])
         
+        # Tratamento de exceções
         except oracledb.Error as e:
             error_obj, = e.args
 
@@ -142,9 +154,11 @@ def select_emprestimo(connection):
                 print("Error Message:", error_obj.message)
                 print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
 
+            # Caso de erro ele dá rollback e não executa a ação definitivamente
             connection.rollback()
 
         else:
+            # Caso em que a busca é bem sucedida
             tabela = cursor.fetchall()
             print("------------------------------------------------------------------", end="\n")
             print(f"EMPRESTIMOS REALIZADOS ENTRE {data_inicio} E {data_fim}", end="\n")
@@ -165,9 +179,12 @@ def select_emprestimo(connection):
                     print("------------------------------------------------------------------", end="\n")
                     
             print("\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+
+            # Caso dê certo ao final da ação ele commita as mudanças
             connection.commit()
 
         finally:
+            # Final de cada ação que permite a repetição da funcionalidade ou saída dela
             acao = input("Você ainda deseja buscar empréstimos? Se sim, digite 'S': ")
             clear()
 
@@ -175,6 +192,8 @@ def select_emprestimo(connection):
                 cursor.close()
                 return
 
+
+# Funçãoq que limpa o terminal
 def clear(): 
     if name == 'nt': 
         x = system('cls') 
@@ -182,20 +201,26 @@ def clear():
         x = system('clear') 
 
 
-
+# Função main em que o código será executado
 if __name__ == "__main__":
     clear()
     try:
+        
+        # Tentando conexão
         connection = connect()
         if(not connection):
             exit()
 
+        # Aplicação rodando
         while(True):
             application(connection)
         
+        # Fim da conexão
         connection.close()
 
+    # Tratamento de caso ^C seja acionado
     except KeyboardInterrupt:
         print("\nEncerrando a aplicação")
+        # Fim da conexão
         connection.close()
         exit()
