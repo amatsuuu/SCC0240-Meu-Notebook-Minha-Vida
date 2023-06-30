@@ -114,7 +114,6 @@ def cadastro_dispositivo(connection):
             clear()
 
             if acao.upper() != 'S':
-                cursor.close()
                 return
 
 
@@ -189,7 +188,6 @@ def select_emprestimo(connection):
             clear()
 
             if acao.upper() != 'S':
-                cursor.close()
                 return
 
 
