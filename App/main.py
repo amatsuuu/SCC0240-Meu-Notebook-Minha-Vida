@@ -113,13 +113,13 @@ def select_emprestimo(connection):
     while(True):
         try:
             print("Essa é a seção de ação.")
-            print("Utilize o formato (DD-MM-YYYY)")
+            print("Utilize o formato (DD-MM-YYYY ou DD/MM/YYYY)")
             data_inicio = input("Data de início: ")
             data_fim = input("Data de fim: ")
             clear()
 
             cursor = connection.cursor()
-            cursor.execute("""SELECT E.DATA, E.DATA_DEVOLUCAO, A.NOME, D.NUMERO_SERIAL, D.TIPO, D.MODELO, D.STATUS FROM DISPOSITIVO D 
+            cursor.execute("""SELECT E.DATA, E.DATA_DEVOLUCAO, D.NUMERO_SERIAL, D.TIPO, D.MODELO, D.STATUS, A.NOME, A.REG_ALUNO FROM DISPOSITIVO D 
                             JOIN EMPRESTIMO E 
                             ON D.NUMERO_SERIAL = E.DISPOSITIVO 
                             JOIN ALUNO A
@@ -131,10 +131,41 @@ def select_emprestimo(connection):
         except oracledb.Error as e:
             error_obj, = e.args
 
-            print("Error Message:", error_obj.message)
-            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+            if(error_obj.code == 1858):
+                print("Digite um valor numérico válido de data")
+                print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+            elif (error_obj.code == 1861):
+                print("Use a formatação necessária na entrada")
+                print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+            else:
+                print("Error Message:", error_obj.message)
+                print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+
             connection.rollback()
 
+        else:
+            tabela = cursor.fetchall()
+            print("------------------------------------------------------------------", end="\n")
+            print(f"EMPRESTIMOS REALIZADOS ENTRE {data_inicio} E {data_fim}", end="\n")
+            print("------------------------------------------------------------------", end="\n")
+            if tabela == []:
+                print("\nNão foi encontrado nenhum empréstimo nesse intervalo de tempo.\n")
+            else:
+                for tupla in tabela:
+                    print("Data de retirada:", tupla[0].strftime("%d-%m-%Y"))
+                    print("Data de devolução:", tupla[1].strftime("%d-%m-%Y"))
+                    print("Número serial:", tupla[2])
+                    print("Tipo:", tupla[3])
+                    print("Modelo:", tupla[4])
+                    print("Status:", tupla[5])
+                    print("\nNome do Aluno:", tupla[6])
+                    print("RA:", tupla[7])
+                    print("------------------------------------------------------------------", end="\n")
+                    
+            print("\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+            connection.commit()
+
+        finally:
             acao = input("Você ainda deseja buscar empréstimos? Se sim, digite 'S': ")
             clear()
 
@@ -142,25 +173,15 @@ def select_emprestimo(connection):
                 cursor.close()
                 return
 
-        else:
-            tabela = cursor.fetchall()
-            if tabela == []:
-                print("Não foi encontrado nenhum empréstimo nesse intervalo de tempo.")
-            else:
-                for tupla in tabela:
-                    print("------------------------------------------------", end="\n")
-                    print("Data de retirada:", tupla[0].strftime("%d-%m-%Y"))
-                    print("Data de devolução:", tupla[1].strftime("%d-%m-%Y"))
-                    print("Número serial:", tupla[2])
-                    print("Tipo:", tupla[3])
-                    print("Modelo:", tupla[4])
-                    print("Status:", tupla[5])
-                    
-            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
+            # acao = input("Deseja realizar outra busca? Se sim, digite 'S': ")
+            # clear()
 
-            cursor.close()
-            connection.commit()
-            return
+            # if acao.upper() != 'S':
+            #     cursor.close()
+            #     return
+            
+            # cursor.close()
+            # return
 
 
 
@@ -186,4 +207,5 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         print("\nEncerrando a aplicação")
+        connection.close()
         exit()
