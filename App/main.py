@@ -33,7 +33,7 @@ def connect():
 
 def main_menu():
     print(">>>>>>>>>>> Meu Notebook, Minha Vida <<<<<<<<<<<")
-    print("Bem-vindo(a) à Página Inicial do nosso Sistema!", end='\n')
+    print("Bem-vindo(a) à Página Inicial do nosso Sistema!", end="\n\n")
     print("Escolha uma opção:")
     print("1. Cadastrar dispositivo")
     print("2. Buscar empréstimos por intervalo de data")
@@ -74,7 +74,7 @@ def cadastro_dispositivo(connection):
             # Inserção SQL
             cursor = connection.cursor()
             cursor.execute("""insert into dispositivo
-                            values (:numero_serial, :tipo, :modelo, 'DISPONIVEL', 1, :empresa)""",
+                            values (:numero_serial, :tipo, :modelo, 'DISPONIVEL', 0, :empresa)""",
                             [numero_serial.upper(), tipo.upper(), modelo.upper(), empresa.upper()])
 
         except oracledb.Error as e:
@@ -119,12 +119,13 @@ def select_emprestimo(connection):
             clear()
 
             cursor = connection.cursor()
-            cursor.execute("""select E.DATA, E.DATA_DEVOLUCAO, D.NUMERO_SERIAL, D.TIPO, D.MODELO, D.STATUS
-                            from DISPOSITIVO D 
-                            join EMPRESTIMO E
-                            on D.NUMERO_SERIAL = E.DISPOSITIVO
-                            where E.DATA between TO_DATE(:data_inicio, 'DD-MM-YYYY') and TO_DATE(:data_fim, 'DD-MM-YYYY')
-                            order by E.DATA desc""",
+            cursor.execute("""SELECT E.DATA, E.DATA_DEVOLUCAO, A.NOME, D.NUMERO_SERIAL, D.TIPO, D.MODELO, D.STATUS FROM DISPOSITIVO D 
+                            JOIN EMPRESTIMO E 
+                            ON D.NUMERO_SERIAL = E.DISPOSITIVO 
+                            JOIN ALUNO A
+                            ON E.ALUNO = A.CPF
+                            WHERE E.DATA BETWEEN TO_DATE(:data_inicio, 'DD-MM-YYYY') AND TO_DATE(:data_fim, 'DD-MM-YYYY')
+                            ORDER BY E.DATA DESC""",
                             [data_inicio, data_fim])
         
         except oracledb.Error as e:
