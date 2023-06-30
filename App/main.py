@@ -24,6 +24,7 @@ def connect():
     # Tentativa de conexão
     print("Tentando conexão...")
     connection = oracledb.connect(user=USERNAME, password=USER_PASSWORD, host="orclgrad1.icmc.usp.br", port=1521, service_name="pdb_elaine.icmc.usp.br")
+    clear()
     print("Conexão estabelecida!")
     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
 
@@ -72,10 +73,10 @@ def cadastro_dispositivo(connection):
             clear()
 
             # Inserção SQL
+            sql = """INSERT INTO DISPOSITIVO
+                    VALUES (:numero_serial, :tipo, :modelo, 'DISPONIVEL', 0, :empresa)"""
             cursor = connection.cursor()
-            cursor.execute("""insert into dispositivo
-                            values (:numero_serial, :tipo, :modelo, 'DISPONIVEL', 0, :empresa)""",
-                            [numero_serial.upper(), tipo.upper(), modelo.upper(), empresa.upper()])
+            cursor.execute(sql, [numero_serial.upper(), tipo.upper(), modelo.upper(), empresa.upper()])
 
         except oracledb.Error as e:
             error_obj, = e.args
@@ -117,16 +118,16 @@ def select_emprestimo(connection):
             data_inicio = input("Data de início: ")
             data_fim = input("Data de fim: ")
             clear()
-
+            
+            sql = """SELECT E.DATA, E.DATA_DEVOLUCAO, D.NUMERO_SERIAL, D.TIPO, D.MODELO, D.STATUS, A.NOME, A.REG_ALUNO, ESC.NOME FROM DISPOSITIVO D 
+                    JOIN EMPRESTIMO E ON D.NUMERO_SERIAL = E.DISPOSITIVO 
+                    JOIN ALUNO A ON E.ALUNO = A.CPF
+                    JOIN ESCOLA_PARCEIRA ESC ON A.ESCOLA = ESC.CODIGO_INEP
+                    WHERE E.DATA BETWEEN TO_DATE(:data_inicio, 'DD-MM-YYYY') AND TO_DATE(:data_fim, 'DD-MM-YYYY')
+                    ORDER BY E.DATA DESC"""
+            
             cursor = connection.cursor()
-            cursor.execute("""SELECT E.DATA, E.DATA_DEVOLUCAO, D.NUMERO_SERIAL, D.TIPO, D.MODELO, D.STATUS, A.NOME, A.REG_ALUNO FROM DISPOSITIVO D 
-                            JOIN EMPRESTIMO E 
-                            ON D.NUMERO_SERIAL = E.DISPOSITIVO 
-                            JOIN ALUNO A
-                            ON E.ALUNO = A.CPF
-                            WHERE E.DATA BETWEEN TO_DATE(:data_inicio, 'DD-MM-YYYY') AND TO_DATE(:data_fim, 'DD-MM-YYYY')
-                            ORDER BY E.DATA DESC""",
-                            [data_inicio, data_fim])
+            cursor.execute(sql,[data_inicio, data_fim])
         
         except oracledb.Error as e:
             error_obj, = e.args
@@ -160,6 +161,7 @@ def select_emprestimo(connection):
                     print("Status:", tupla[5])
                     print("\nNome do Aluno:", tupla[6])
                     print("RA:", tupla[7])
+                    print("Escola:", tupla[8])
                     print("------------------------------------------------------------------", end="\n")
                     
             print("\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", end="\n\n")
@@ -172,18 +174,6 @@ def select_emprestimo(connection):
             if acao.upper() != 'S':
                 cursor.close()
                 return
-
-            # acao = input("Deseja realizar outra busca? Se sim, digite 'S': ")
-            # clear()
-
-            # if acao.upper() != 'S':
-            #     cursor.close()
-            #     return
-            
-            # cursor.close()
-            # return
-
-
 
 def clear(): 
     if name == 'nt': 

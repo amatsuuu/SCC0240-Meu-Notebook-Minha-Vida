@@ -21,10 +21,15 @@ pip install oracledb
 pip install python-dotenv
 ```
 
-
 ## Utilização
 
-Para executar o código, certifique-se que você está no diretório `App/` e execute o seguinte código no terminal:
+Antes de executar o código, é preciso criar um arquivo *.env* no diretório [App/*](https://github.com/reynaldocoronatto/SCC0240-Meu-Notebook-Minha-Vida/tree/master/App), com as credenciais de acesso ao banco de dados do Oracle. Ele tem que estar no formato:
+```
+USER_NAME={seu usuário}
+USER_PASSWORD={sua senha}
+```
+
+Depois disso, para executar o código, certifique-se que você está no diretório [App/](https://github.com/reynaldocoronatto/SCC0240-Meu-Notebook-Minha-Vida/tree/master/App) e execute o seguinte código no terminal:
 
 ```
 python main.py
@@ -35,3 +40,7 @@ Caso isso não funcione, tente:
 ```
 python3 main.py
 ```
+
+## Modelagem
+- [Modelo Entidade Relacionamento](https://github.com/reynaldocoronatto/SCC0240-Meu-Notebook-Minha-Vida/blob/master/Modelagem/modelo_entidade_relacionamento.jpg)
+- [Modelo Relacional](https://github.com/reynaldocoronatto/SCC0240-Meu-Notebook-Minha-Vida/blob/master/Modelagem/modelo_relacional.png)
