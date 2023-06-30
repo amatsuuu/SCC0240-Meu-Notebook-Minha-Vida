@@ -50,7 +50,6 @@ LEFT JOIN (
 ON M.CPF = J.MONITOR
 ORDER BY M.NOME;
 
-
 -- Liste todas as escolas que não possuem aluno com dispositivos emprestados da empresa ‘Comércio e Simões EFG’.
 SELECT ESC.NOME, ESC.CODIGO_INEP 
 FROM ESCOLA_PARCEIRA ESC
