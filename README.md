@@ -43,4 +43,4 @@ python3 main.py
 
 ## Modelagem
 - [Modelo Entidade Relacionamento](https://github.com/reynaldocoronatto/SCC0240-Meu-Notebook-Minha-Vida/blob/master/Modelagem/modelo_entidade_relacionamento.jpg)
-- [Modelo Relacional](https://github.com/reynaldocoronatto/SCC0240-Meu-Notebook-Minha-Vida/blob/master/Modelagem/modelo_relacional.png)
+- [Modelo Relacional](https://github.com/reynaldocoronatto/SCC0240-Meu-Notebook-Minha-Vida/blob/master/Modelagem/modelo_relacional.jpg)
